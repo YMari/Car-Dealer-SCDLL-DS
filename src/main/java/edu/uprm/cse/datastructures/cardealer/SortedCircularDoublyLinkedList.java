@@ -12,7 +12,7 @@ public class SortedCircularDoublyLinkedList<E> implements SortedList<E> {
 	private int currentSize;
 	private Comparator<E> comp;
 	
-	public SortedCircularDoublyLinkedList(Comparator cmp) {
+	public SortedCircularDoublyLinkedList(Comparator<E> cmp) {
 		this.header = new Node<>();
 		this.currentSize = 0;
 		
