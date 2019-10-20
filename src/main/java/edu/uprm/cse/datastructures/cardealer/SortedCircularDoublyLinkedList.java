@@ -10,7 +10,27 @@ public class SortedCircularDoublyLinkedList<E> implements SortedList<Integer> {
 	
 	private Node<E> header;
 	private int currentSize;
-	private Comparator Comp;
+	private comparator<E> comp;
+	
+	public class comparator<E> implements Comparator<E> {
+
+		@Override
+		public int compare(E obj1, E obj2) {
+			int carID1 = (Integer) obj1;
+			int carID2 = (Integer) obj2;
+			
+			if (carID1 == carID2) {
+				return 0;
+			}
+			else if (carID1 > carID2) {
+				return 1;
+			}
+			else {
+				return -1;
+			}
+		}
+		
+	}
 	
 	public SortedCircularDoublyLinkedList(Comparator comparator) {
 		this.header = new Node<>();
@@ -24,20 +44,40 @@ public class SortedCircularDoublyLinkedList<E> implements SortedList<Integer> {
 	public boolean add(Integer obj) {
 		if (this.isEmpty()) {
 			this.header.setNext(new Node<E>((E) obj, this.header, this.header));
+			this.header.setPrevious(this.header.getNext());
 			this.currentSize++;
 		}
+//		else {
+//			Node<E> temp = this.header;
+//			
+//			while (temp.getNext() != this.header) {
+//				if (this.comp.compare((E) obj, temp.getElement()) >= 0) {
+//					temp = temp.getNext();
+//				}
+//				break;
+//			}
+//		
+//			Node<E> newNode = new Node<>((E) obj, temp, temp.getPrevious());
+//			newNode.getPrevious().setNext(newNode);
+//			temp.setPrevious(newNode);
+//			this.currentSize++;
+//		}
+		
 		else {
-			Node<E>temp= this.header.getNext();
+			Node<E> temp = this.header;
+			
 			while (temp.getNext() != this.header) {
 				temp = temp.getNext();
 			}
+		
 			Node<E> newNode = new Node<>((E) obj, this.header, this.header.getPrevious());
 			temp.setNext(newNode);
 			this.currentSize++;
 		}
+		
 		return true;
 	}
-
+	
 	@Override
 	public int size() {
 		return this.currentSize;
@@ -153,9 +193,9 @@ public class SortedCircularDoublyLinkedList<E> implements SortedList<Integer> {
 
 	@Override
 	public int lastIndex(Integer e) {
-		int i = 0;
-		for (Node<E> temp = this.header.getPrevious(); temp != null; 
-				temp = temp.getPrevious(), ++i) {
+		int i = this.currentSize - 1;
+		for (Node<E> temp = this.header.getPrevious(); temp != this.header; 
+				temp = temp.getPrevious(), --i) {
 			if (temp.getElement().equals(e)) {
 				return i;
 			}
@@ -244,5 +284,5 @@ public class SortedCircularDoublyLinkedList<E> implements SortedList<Integer> {
 			}
 		}
 	}
-	
+
 }
