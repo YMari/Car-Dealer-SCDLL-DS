@@ -6,76 +6,62 @@ import java.util.NoSuchElementException;
 
 import edu.uprm.cse.datastructures.cardealer.util.SortedList;
 
-public class SortedCircularDoublyLinkedList<E> implements SortedList<Integer> {
+public class SortedCircularDoublyLinkedList<E> implements SortedList<E> {
 	
 	private Node<E> header;
 	private int currentSize;
-	private comparator<E> comp;
+	private Comparator<E> comp;
 	
-	public class comparator<E> implements Comparator<E> {
-
-		@Override
-		public int compare(E obj1, E obj2) {
-			int carID1 = (Integer) obj1;
-			int carID2 = (Integer) obj2;
-			
-			if (carID1 == carID2) {
-				return 0;
-			}
-			else if (carID1 > carID2) {
-				return 1;
-			}
-			else {
-				return -1;
-			}
-		}
-		
-	}
-	
-	public SortedCircularDoublyLinkedList(Comparator comparator) {
+	public SortedCircularDoublyLinkedList(Comparator cmp) {
 		this.header = new Node<>();
 		this.currentSize = 0;
 		
+		this.comp = cmp;
 		this.header.setNext(this.header);
 		this.header.setPrevious(this.header);
 	}
 
 	@Override
-	public boolean add(Integer obj) {
+	public boolean add(E obj) {
+		Node<E> temp = this.header;
+		Node<E> newNode = new Node<E>((E) obj, null, null);
+		
 		if (this.isEmpty()) {
-			this.header.setNext(new Node<E>((E) obj, this.header, this.header));
-			this.header.setPrevious(this.header.getNext());
-			this.currentSize++;
-		}
-//		else {
-//			Node<E> temp = this.header;
-//			
-//			while (temp.getNext() != this.header) {
-//				if (this.comp.compare((E) obj, temp.getElement()) >= 0) {
-//					temp = temp.getNext();
-//				}
-//				break;
-//			}
-//		
-//			Node<E> newNode = new Node<>((E) obj, temp, temp.getPrevious());
-//			newNode.getPrevious().setNext(newNode);
-//			temp.setPrevious(newNode);
-//			this.currentSize++;
-//		}
-		
-		else {
-			Node<E> temp = this.header;
-			
-			while (temp.getNext() != this.header) {
-				temp = temp.getNext();
-			}
-		
-			Node<E> newNode = new Node<>((E) obj, this.header, this.header.getPrevious());
 			temp.setNext(newNode);
+			temp.setPrevious(newNode);
+			newNode.setNext(temp);
+			newNode.setPrevious(temp);
 			this.currentSize++;
 		}
-		
-		return true;
+		else {
+			temp = temp.getNext();
+			while (temp != this.header) {
+				// compare object to keep the order
+				if (this.comp.compare(newNode.getElement(), temp.getElement()) <= 0) {
+					newNode.setNext(temp);
+					newNode.setPrevious(temp.getPrevious());
+					temp.getPrevious().setNext(newNode);
+					temp.setPrevious(newNode);
+					this.currentSize++;
+					return true;
+				}
+				// move through the nodes
+				else if (temp.getNext() != this.header) {
+					temp = temp.getNext();
+				}
+				// if we made it to the end, place the new object at the end
+				else {
+					newNode.setPrevious(this.header.getPrevious());
+					newNode.setNext(this.header);
+					this.header.getPrevious().setNext(newNode);
+					this.header.setPrevious(newNode);
+					this.currentSize++;
+					return true;
+				}
+			}
+		}
+
+		return false;  // if no condition is met, return false
 	}
 	
 	@Override
@@ -84,7 +70,7 @@ public class SortedCircularDoublyLinkedList<E> implements SortedList<Integer> {
 	}
 
 	@Override
-	public boolean remove(Integer obj) {
+	public boolean remove(E obj) {
 		int i = this.firstIndex(obj);
 		if (i < 0) {
 			return false;
@@ -97,29 +83,24 @@ public class SortedCircularDoublyLinkedList<E> implements SortedList<Integer> {
 	@Override
 	public boolean remove(int index) {
 		if ((index < 0) || (index >= this.currentSize)){
-			return false;
+			throw new IndexOutOfBoundsException();
 		}
-		else {
-			Node<E> temp = this.header;
-			Node<E> target = null;
-			int currentPosition = 0;
-			
-			while (currentPosition != index) {
-				temp = temp.getNext();
-				currentPosition++;
-			}
-			target = temp.getNext();
-			temp.setNext(target.getNext());
-			target.setElement(null);
-			target.setNext(null);
-			target.setPrevious(null);
-			this.currentSize--;
-			return true;
+
+		Node<E> temp = this.header;
+		for(int i = 0; i <= index; i++) { 
+			temp = temp.getNext();
 		}
+
+		temp.getPrevious().setNext(temp.getNext());
+		temp.getNext().setPrevious(temp.getPrevious()); 
+		temp.setNext(null);
+		temp.setPrevious(null);
+		this.currentSize--;
+		return true;
 	}
 
 	@Override
-	public int removeAll(Integer obj) {
+	public int removeAll(E obj) {
 		int count = 0;
 		while (this.remove(obj)) {
 			count++;
@@ -128,37 +109,22 @@ public class SortedCircularDoublyLinkedList<E> implements SortedList<Integer> {
 	}
 
 	@Override
-	public Integer first() {
-		// return the first element (casted to integer)
-		return (this.isEmpty() ? null : (Integer) this.header.getNext().getElement());
+	public E first() {  // return the first element
+		return this.header.getNext().getElement();
 	}
 
 	@Override
-	public Integer last() {
-		// return the last element (casted to integer)
-		return (this.isEmpty() ? null : (Integer) this.header.getPrevious().getElement());
+	public E last() {  // return the last element
+		return this.header.getPrevious().getElement();
 	}
 
 	@Override
-	public Integer get(int index) {
-		if ((index < 0) || index >= this.currentSize) {
-			throw new IndexOutOfBoundsException();
-		}
-		
-		Node<E> temp  = this.getPosition(index);
-		return (Integer) temp.getElement();
-	}
-	
-	private Node<E> getPosition(int index){
-		int currentPosition = 0;
-		Node<E> temp = this.header.getNext();
-		
-		while(currentPosition != index) {
-			temp = temp.getNext();
-			currentPosition++;
-		}
-		return temp;
-
+	public E get(int index) {
+		Node<E> temp = this.header;
+        for(int i = 0; i <= index; i++) { 
+            temp = temp.getNext();
+        }
+        return temp.getElement();
 	}
 
 	@Override
@@ -169,7 +135,7 @@ public class SortedCircularDoublyLinkedList<E> implements SortedList<Integer> {
 	}
 
 	@Override
-	public boolean contains(Integer e) {
+	public boolean contains(E e) {
 		return this.firstIndex(e) >= 0;
 	}
 
@@ -179,34 +145,43 @@ public class SortedCircularDoublyLinkedList<E> implements SortedList<Integer> {
 	}
 
 	@Override
-	public int firstIndex(Integer e) {
+	public int firstIndex(E e) {
 		int i = 0;
-		for (Node<E> temp = this.header.getNext(); temp != null; 
-				temp = temp.getNext(), ++i) {
-			if (temp.getElement().equals(e)) {
-				return i;
-			}
-		}
-		// not found
-		return -1;
+    	Node<E> temp = this.header.getNext(); 
+    	
+    	while(temp.getNext() != this.header) {  //loop until the first instance is found
+    		if (temp.getElement().equals(e)) {
+    			return i;
+    		} 
+    		temp = temp.getNext(); 
+    		i++;
+    	}
+    	
+    	if (temp.getElement().equals(e)) {  // return the last element's index
+    		return i;
+    	}
+    	
+    	return -1; // not found
 	}
 
 	@Override
-	public int lastIndex(Integer e) {
+	public int lastIndex(E e) {
 		int i = this.currentSize - 1;
-		for (Node<E> temp = this.header.getPrevious(); temp != this.header; 
-				temp = temp.getPrevious(), --i) {
+		Node<E> temp = this.header.getPrevious();
+				
+		while (temp.getPrevious() != this.header) {  // loop backwards until the last instance is found
 			if (temp.getElement().equals(e)) {
 				return i;
 			}
+			temp = temp.getPrevious();
+			i--;
 		}
-		// not found
-		return -1;
+		return -1;  // not found
 	}
 	
 	@Override
-	public Iterator<Integer> iterator() {
-		return (Iterator<Integer>) new SortedCircularDoublyLinkedListIterator<E>();
+	public Iterator<E> iterator() {
+		return new SortedCircularDoublyLinkedListIterator<E>();
 	}
 	
 	private static class Node<E> {
