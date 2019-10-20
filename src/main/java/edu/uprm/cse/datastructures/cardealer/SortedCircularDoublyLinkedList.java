@@ -2,6 +2,7 @@ package edu.uprm.cse.datastructures.cardealer;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import edu.uprm.cse.datastructures.cardealer.util.SortedList;
 
@@ -17,12 +18,6 @@ public class SortedCircularDoublyLinkedList<E> implements SortedList<Integer> {
 		
 		this.header.setNext(this.header);
 		this.header.setPrevious(this.header);
-	}
-
-	@Override
-	public Iterator<Integer> iterator() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -169,6 +164,11 @@ public class SortedCircularDoublyLinkedList<E> implements SortedList<Integer> {
 		return -1;
 	}
 	
+	@Override
+	public Iterator<Integer> iterator() {
+		return (Iterator<Integer>) new SortedCircularDoublyLinkedListIterator<E>();
+	}
+	
 	private static class Node<E> {
 		private E element;
 		private Node<E> next;
@@ -201,6 +201,47 @@ public class SortedCircularDoublyLinkedList<E> implements SortedList<Integer> {
 		}
 		public void setPrevious(Node<E> previous) {
 			this.previous = previous;
+		}
+	}
+	
+	private class SortedCircularDoublyLinkedListIterator<E> implements Iterator<E>{
+		private Node<E> nextNode;
+		private Node<E> previousNode;
+		
+		public SortedCircularDoublyLinkedListIterator() {
+			this.nextNode = (Node<E>) header.getNext();
+			this.previousNode = (Node<E>) header.getPrevious();
+		}
+		@Override
+		public boolean hasNext() {
+			return nextNode != null;
+		}
+		
+		public boolean hasPrevious() {
+			return previousNode != null;
+		}
+
+		@Override
+		public E next() {
+			if (this.hasNext()) {
+				E result = this.nextNode.getElement();
+				this.nextNode = this.nextNode.getNext();
+				return result;
+			}
+			else {
+				throw new NoSuchElementException();
+			}
+		}
+		
+		public E previous() {
+			if (this.hasPrevious()) {
+				E result = this.nextNode.getElement();
+				this.previousNode = this.previousNode.getPrevious();
+				return result;
+			}
+			else {
+				throw new NoSuchElementException();
+			}
 		}
 	}
 	
