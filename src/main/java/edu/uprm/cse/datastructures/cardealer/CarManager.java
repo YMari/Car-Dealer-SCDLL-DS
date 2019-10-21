@@ -13,15 +13,16 @@ import javax.ws.rs.core.Response;
 
 import edu.uprm.cse.datastructures.cardealer.model.Car;
 import edu.uprm.cse.datastructures.cardealer.model.CarComparator;
+import edu.uprm.cse.datastructures.cardealer.model.CarList;
 
 @Path("/cars")
 public class CarManager {
 
-	private static final SortedCircularDoublyLinkedList<Car> carList = new SortedCircularDoublyLinkedList<Car>(new CarComparator()); //helper class instance
+	private static final SortedCircularDoublyLinkedList<Car> carList = CarList.getInstance(); //helper class instance
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Car[] getCarList(){ //O(n) complexity
+	public Car[] getCarList(){
 		if(carList.isEmpty())return null;
 		Car[] carArray = new Car[carList.size()];
 		for(int i=0;i<carArray.length; i++)carArray[i]=(Car)carList.get(i);
@@ -41,13 +42,6 @@ public class CarManager {
 	@Path("/add")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addCar(Car car){
-
-		for(int i=0; i<carList.size(); i++){
-			if(((Car)carList.get(i)).getCarId()==car.getCarId() || ((Car)carList.get(i)).getCarBrand()==null  
-					|| ((Car)carList.get(i)).getCarModel()==null || ((Car)carList.get(i)).getCarModelOption()==null){
-				return Response.status(404).build();
-			}
-		}
 		carList.add(car);
 		return Response.status(201).build();
 	}
@@ -63,7 +57,7 @@ public class CarManager {
 				return Response.status(Response.Status.OK).build();
 			}
 		}
-		return Response.status(404).build();
+		return Response.status(404).build();		
 	}
 
 	@DELETE

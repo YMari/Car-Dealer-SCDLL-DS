@@ -24,7 +24,7 @@ public class SortedCircularDoublyLinkedList<E> implements SortedList<E> {
 	@Override
 	public boolean add(E obj) {
 		Node<E> temp = this.header;
-		Node<E> newNode = new Node<E>((E) obj, null, null);
+		Node<E> newNode = new Node<E>(obj, null, null);
 		
 		if (this.isEmpty()) {
 			temp.setNext(newNode);
@@ -32,6 +32,7 @@ public class SortedCircularDoublyLinkedList<E> implements SortedList<E> {
 			newNode.setNext(temp);
 			newNode.setPrevious(temp);
 			this.currentSize++;
+			return true;
 		}
 		else {
 			temp = temp.getNext();
@@ -93,6 +94,7 @@ public class SortedCircularDoublyLinkedList<E> implements SortedList<E> {
 
 		temp.getPrevious().setNext(temp.getNext());
 		temp.getNext().setPrevious(temp.getPrevious()); 
+		temp.setElement(null);
 		temp.setNext(null);
 		temp.setPrevious(null);
 		this.currentSize--;
@@ -157,7 +159,7 @@ public class SortedCircularDoublyLinkedList<E> implements SortedList<E> {
     		i++;
     	}
     	
-    	if (temp.getElement().equals(e)) {  // return the last element's index
+    	if (temp.getElement().equals(e)) {  // end of the list, return last index if its there
     		return i;
     	}
     	

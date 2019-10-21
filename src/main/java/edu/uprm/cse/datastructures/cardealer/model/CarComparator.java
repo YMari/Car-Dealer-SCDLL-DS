@@ -8,31 +8,24 @@ public class CarComparator implements Comparator<Car> {
 	public int compare(Car car1, Car car2) {
 //		String car1Str = car1.getCarBrand() + car1.getCarModel() + car1.getCarModelOption(); 
 //		String car2Str = car2.getCarBrand() + car2.getCarModel() + car2.getCarModelOption();
-//		
-//	    if (car1Str == car2Str) 
-//	        return 0;
-//	    
-//	    if (car1Str == null) 
-//	    	return -1;
-//	    
-//	    if (car2Str == null) 
-//	        return 1;
 //	    
 //	    return car1Str.compareTo(car2Str);
+//	}
+//}
 	    
 		String car1Brand = car1.getCarBrand(); 
 		String car2Brand = car2.getCarBrand();
-		
+
 		String car1Model = car1.getCarModel(); 
 		String car2Model = car2.getCarModel();
-		
+
 		String car1Option = car1.getCarModelOption(); 
 		String car2Option = car2.getCarModelOption();
-		
+
 		if (car1Brand.compareTo(car2Brand) == 0) {
-			
+
 			if(car1Model.compareTo(car2Model) == 0) {
-				
+
 				if(car1Option.compareTo(car2Option) == 0) {
 					return 0;
 				}
@@ -42,7 +35,7 @@ public class CarComparator implements Comparator<Car> {
 				else {
 					return -1;
 				}
-				
+
 			}
 			else if (car1Model.compareTo(car2Model) > 0) {
 				return 1;
@@ -50,7 +43,7 @@ public class CarComparator implements Comparator<Car> {
 			else {
 				return -1;
 			}
-			
+
 		}
 		else if (car1Brand.compareTo(car2Brand) > 0) {
 			return 1;
@@ -58,7 +51,6 @@ public class CarComparator implements Comparator<Car> {
 		else {
 			return -1;
 		}
-		
-	}
 
+	}
 }
