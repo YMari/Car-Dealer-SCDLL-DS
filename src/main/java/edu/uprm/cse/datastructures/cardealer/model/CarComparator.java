@@ -6,13 +6,8 @@ public class CarComparator implements Comparator<Car> {
 
 	@Override
 	public int compare(Car car1, Car car2) {
-//		String car1Str = car1.getCarBrand() + car1.getCarModel() + car1.getCarModelOption(); 
-//		String car2Str = car2.getCarBrand() + car2.getCarModel() + car2.getCarModelOption();
-//	    
-//	    return car1Str.compareTo(car2Str);
-//	}
-//}
-	    
+		// compares each individual string of the labeling in the Car class
+		// to keep lexicographical order
 		String car1Brand = car1.getCarBrand(); 
 		String car2Brand = car2.getCarBrand();
 

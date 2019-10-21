@@ -18,11 +18,12 @@ import edu.uprm.cse.datastructures.cardealer.model.CarList;
 @Path("/cars")
 public class CarManager {
 
+	// call a new instance of the list
 	private static final SortedCircularDoublyLinkedList<Car> carList = CarList.getInstance(); //helper class instance
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Car[] getCarList(){
+	public Car[] getCarList(){ // returns all the elements available in the list
 		if(carList.isEmpty())return null;
 		Car[] carArray = new Car[carList.size()];
 		for(int i=0;i<carArray.length; i++)carArray[i]=(Car)carList.get(i);
@@ -32,7 +33,7 @@ public class CarManager {
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Car getCar(@PathParam("id") long id){
+	public Car getCar(@PathParam("id") long id){ // returns the element with the specified id value
 		for(int i=0; i<carList.size(); i++){
 			if(((Car)carList.get(i)).getCarId()==id){ return (Car)carList.get(i);}  
 		}  throw new NotFoundException();
@@ -41,7 +42,7 @@ public class CarManager {
 	@POST
 	@Path("/add")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response addCar(Car car){
+	public Response addCar(Car car){ // adds a new element to the list
 		carList.add(car);
 		return Response.status(201).build();
 	}
@@ -49,27 +50,27 @@ public class CarManager {
 	@PUT
 	@Path("/{id}/update")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response updateCar(Car car){
+	public Response updateCar(Car car){ // updates an existing element with the specified id
 		for(int i=0; i<carList.size(); i++){
-			if(((Car)carList.get(i)).getCarId()==car.getCarId()){ //The new car has to have the same Id
+			if(((Car)carList.get(i)).getCarId()==car.getCarId()){ // tests for same element id
 				carList.remove(i);
 				carList.add(car);
 				return Response.status(Response.Status.OK).build();
 			}
 		}
-		return Response.status(404).build();		
+		return Response.status(404).build(); // if the id does not exist, return 404 (Error)
 	}
 
 	@DELETE
 	@Path("/{id}/delete")
-	public Response deleteCar(@PathParam("id") long id){
+	public Response deleteCar(@PathParam("id") long id){ // deletes an existing element with the specified id
 		for(int i=0; i<carList.size(); i++){
 			if(id==((Car)carList.get(i)).getCarId()){
 				carList.remove(i);
 				return Response.status(Response.Status.OK).build();
 			}
 		}
-		return Response.status(404).build();
+		return Response.status(404).build(); // if the id does not exist, return 404 (Error)
 
 	}
 }
